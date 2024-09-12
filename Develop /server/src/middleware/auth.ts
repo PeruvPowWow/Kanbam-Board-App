@@ -2,30 +2,34 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 interface JwtPayload {
+  id: number;
   username: string;
-  id: string;  // Add any other relevant fields, like user ID
 }
 
+// Middleware to authenticate JWT token
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  // Get the Authorization header from the request
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Extract the token
+  const authHeader = req.headers['authorization']; // Authorization header
+  const token = authHeader && authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
 
-  // If no token is provided, return 401 Unauthorized
-  if (token == null) return res.status(401).json({ message: 'Token not provided' });
+  // If no token is found, return unauthorized status
+  if (!token) {
+    return res.status(401).json({ message: 'Access token is missing' });
+  }
 
-  // Verify the token using the JWT secret key
+  // Verify the token
   jwt.verify(token, process.env.JWT_SECRET as string, (err, decodedToken) => {
-    if (err) return res.status(403).json({ message: 'Invalid token' });
+    if (err) {
+      // If verification fails, return forbidden status
+      return res.status(403).json({ message: 'Invalid or expired token' });
+    }
 
-    // If the token is valid, attach the user data (decodedToken) to the request object
+    // Cast decodedToken to the custom JwtPayload type
     const payload = decodedToken as JwtPayload;
-    req.user = {
-      id: payload.id,
-      username: payload.username,
-    };
 
-    // Proceed to the next middleware or route handler
+    // If the token is valid, attach user info to the request object
+    req.user = { id: payload.id, username: payload.username };
+
+    // Call next() to proceed to the next middleware/route handler
     next();
   });
 };
