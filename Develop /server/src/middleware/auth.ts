@@ -1,17 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+// Extend JwtPayload to include 'id'
 interface JwtPayload {
-  id: number;
+  id: string;
   username: string;
 }
 
-// Middleware to authenticate JWT token
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization']; // Authorization header
-  const token = authHeader && authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
+  // Get token from header
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
-  // If no token is found, return unauthorized status
+  // If no token is provided, return a 401 Unauthorized response
   if (!token) {
     return res.status(401).json({ message: 'Access token is missing' });
   }
@@ -19,17 +20,20 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   // Verify the token
   jwt.verify(token, process.env.JWT_SECRET as string, (err, decodedToken) => {
     if (err) {
-      // If verification fails, return forbidden status
+      // If token verification fails, return a 403 Forbidden response
       return res.status(403).json({ message: 'Invalid or expired token' });
     }
 
-    // Cast decodedToken to the custom JwtPayload type
+    // Cast decodedToken to JwtPayload type
     const payload = decodedToken as JwtPayload;
 
-    // If the token is valid, attach user info to the request object
+    // Attach the user information to the request object
     req.user = { id: payload.id, username: payload.username };
 
-    // Call next() to proceed to the next middleware/route handler
+    // Move to the next middleware or route handler
     next();
   });
+
+  // Add a return here to satisfy TypeScript
+  return;
 };
