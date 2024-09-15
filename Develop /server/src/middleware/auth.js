@@ -20,4 +20,6 @@ export const authenticateToken = (req, res, next) => {
         // Move to the next middleware or route handler
         next();
     });
+    // Add a return here to satisfy TypeScript
+    return;
 };

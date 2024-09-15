@@ -1,11 +1,5 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-
-// Extend JwtPayload to include 'id'
-interface JwtPayload {
-  id: string;
-  username: string;
-}
 
 export const authenticateToken: RequestHandler = (req, res, next) => {
   // Get token from header
@@ -17,23 +11,21 @@ export const authenticateToken: RequestHandler = (req, res, next) => {
     return res.status(401).json({ message: 'Access token is missing' });
   }
 
-  // Verify the token
   jwt.verify(token, process.env.JWT_SECRET as string, (err, decodedToken) => {
     if (err) {
-      // If token verification fails, return a 403 Forbidden response
-      return res.status(403).json({ message: 'Invalid or expired token' });
+      return res.status(403).json({ message: 'Invalid or expired token' }); // Return here to stop execution on error
     }
 
-    // Cast decodedToken to JwtPayload type
-    const payload = decodedToken as JwtPayload;
-
+    // Cast decodedToken to the correct payload type
+    const payload = decodedToken as { id: string; username: string };
     // Attach the user information to the request object
     req.user = { id: payload.id, username: payload.username };
 
-    // Move to the next middleware or route handler
-    next();
+    // Call next() to proceed to the next middleware or route handler
+    return next(); // Explicit return here ensures that we return a value in every code path
   });
 
   // Add a return here to satisfy TypeScript
   return;
 };
+
