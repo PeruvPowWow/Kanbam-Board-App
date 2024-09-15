@@ -1,25 +1,12 @@
-import jwt from 'jsonwebtoken';
-export const authenticateToken = (req, res, next) => {
-    // Get token from header
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    // If no token is provided, return a 401 Unauthorized response
-    if (!token) {
-        return res.status(401).json({ message: 'Access token is missing' });
-    }
-    // Verify the token
-    jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-        if (err) {
-            // If token verification fails, return a 403 Forbidden response
-            return res.status(403).json({ message: 'Invalid or expired token' });
-        }
-        // Cast decodedToken to JwtPayload type
-        const payload = decodedToken;
-        // Attach the user information to the request object
-        req.user = { id: payload.id, username: payload.username };
-        // Move to the next middleware or route handler
-        next();
-    });
-    // Add a return here to satisfy TypeScript
-    return;
-};
+import { Router } from 'express';
+import authRoutes from './auth-routes';
+import ticketRoutes from './ticket-routes';
+import userRoutes from './user-routes';
+import { authenticateToken } from '../middleware/auth'; // Ensure this path is correct
+const router = Router();
+// Public routes
+router.use('/auth', authRoutes);
+// Protected routes
+router.use('/tickets', authenticateToken, ticketRoutes);
+router.use('/users', authenticateToken, userRoutes);
+export default router;
