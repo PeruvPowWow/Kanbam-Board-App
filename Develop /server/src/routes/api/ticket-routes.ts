@@ -1,4 +1,5 @@
 import express from 'express';
+import { authenticateToken } from '../../middleware/auth.js'; // Import the authentication middleware
 import {
   getAllTickets,
   getTicketById,
@@ -8,6 +9,9 @@ import {
 } from '../../controllers/ticket-controller.js';
 
 const router = express.Router();
+
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
 
 // GET /tickets - Get all tickets
 router.get('/', getAllTickets);
@@ -24,4 +28,4 @@ router.put('/:id', updateTicket);
 // DELETE /tickets/:id - Delete a ticket by id
 router.delete('/:id', deleteTicket);
 
-export { router as ticketRouter };
+export default router; // Export router as default

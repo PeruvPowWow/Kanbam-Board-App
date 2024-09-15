@@ -1,15 +1,17 @@
 import { useState, FormEvent, ChangeEvent } from "react";
-
 import Auth from '../utils/auth';
 import { login } from "../api/authAPI";
+import { useNavigate } from 'react-router-dom'; // For redirection
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
     username: '',
     password: ''
   });
+  const [error, setError] = useState<string | null>(null); // Error state
+  const navigate = useNavigate(); // Hook for redirection
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLoginData({
       ...loginData,
@@ -22,8 +24,10 @@ const Login = () => {
     try {
       const data = await login(loginData);
       Auth.login(data.token);
+      navigate('/kanban-board'); // Redirect on successful login
     } catch (err) {
       console.error('Failed to login', err);
+      setError('Login failed. Please check your username and password.');
     }
   };
 
@@ -31,25 +35,27 @@ const Login = () => {
     <div className='container'>
       <form className='form' onSubmit={handleSubmit}>
         <h1>Login</h1>
-        <label >Username</label>
+        <label htmlFor='username'>Username</label>
         <input 
+          id='username'
           type='text'
           name='username'
-          value={loginData.username || ''}
+          value={loginData.username}
           onChange={handleChange}
         />
-      <label>Password</label>
+        <label htmlFor='password'>Password</label>
         <input 
+          id='password'
           type='password'
           name='password'
-          value={loginData.password || ''}
+          value={loginData.password}
           onChange={handleChange}
         />
-        <button type='submit'>Submit Form</button>
+        <button type='submit'>Submit</button>
+        {error && <p className='error-message'>{error}</p>} {/* Display error message */}
       </form>
     </div>
-    
-  )
+  );
 };
 
 export default Login;

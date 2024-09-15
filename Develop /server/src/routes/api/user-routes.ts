@@ -1,4 +1,5 @@
 import express from 'express';
+import { authenticateToken } from '../../middleware/auth.js'; // Import the authentication middleware
 import {
   getAllUsers,
   getUserById,
@@ -8,6 +9,9 @@ import {
 } from '../../controllers/user-controller.js';
 
 const router = express.Router();
+
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
 
 // GET /users - Get all users
 router.get('/', getAllUsers);
@@ -24,4 +28,4 @@ router.put('/:id', updateUser);
 // DELETE /users/:id - Delete a user by id
 router.delete('/:id', deleteUser);
 
-export { router as userRouter };
+export default router; // Export router as default
