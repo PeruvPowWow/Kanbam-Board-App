@@ -1,16 +1,30 @@
-import { Router } from 'express';
-import authRoutes from './auth-routes';
-import ticketRoutes from './ticket-routes';
-import userRoutes from './user-routes';
-import authenticateToken from '../middleware/auth'; // Ensure this path is correct
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-const router = Router();
+interface JwtPayload {
+  username: string;
+}
 
-// Public routes
-router.use('/auth', authRoutes);
+export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+  // TODO: verify the token exists and add the user data to the request object
+  const authHeader = req.headers.authorization;
 
-// Protected routes
-router.use('/tickets', authenticateToken, ticketRoutes);
-router.use('/users', authenticateToken, userRoutes);
+  if(authHeader){
+    const token = authHeader.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET_KEY || '';
 
-export default router;
+    jwt.verify(token, secretKey, (err, user) => {
+        if(err){
+          //sends back the forbidden status
+          return res.sendStatus(403);
+        }
+
+        req.user = user as JwtPayload;
+        return next();
+    });
+
+  } else {
+    //send back the unauthorized status
+    res.sendStatus(401);
+  }
+};

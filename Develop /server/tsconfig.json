@@ -1,21 +1,13 @@
 {
   "extends": "../tsconfig.json",
-
   "compilerOptions": {
-    "target": "ES6",                           // Specify ECMAScript target version
-    "module": "es2015",                        // Use ES2015 module resolution
-    "strict": true,                            // Enable strict type-checking options
-    "esModuleInterop": true,                   // Enables esModule interoperability
-    "skipLibCheck": true,                      // Skip type checking of declaration files
-    "forceConsistentCasingInFileNames": true,  // Ensure consistent casing in imports
-    "outDir": "dist",                          // Specify output directory for compiled files
-    "rootDir": "src",                          // Specify the root directory of input files
-    "baseUrl": ".",                            // Base directory for non-relative module names
-    "paths": {
-      "*": ["node_modules/*", "src/types/*"]   // Resolve modules and types from src
-    },
-    "types": ["node", "bcrypt"]                // Include type definitions for node and bcrypt
+    /* Modules */
+    "rootDir": "src" /* Specify the root folder within your source files. */,
+
+    /* Emit */
+    "outDir": "dist" /* Specify an output folder for all emitted files. */
+    // "noEmitOnError": true /* Disable emitting files if any type checking errors are reported. */
   },
-  "include": ["src/**/*"],                    // Include all files in src directory
-  "exclude": ["node_modules", "dist"]         // Exclude node_modules and dist directories
+  "include": ["src"],
+  "typeRoots": ["./node_modules/@types", "./src/types"]
 }
