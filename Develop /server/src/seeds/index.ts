@@ -1,4 +1,4 @@
-import { seedUsers } from './user-seeds.js';
+import { seedUsers } from './user-seeds';
 import { seedTickets } from './ticket-seeds.js';
 import { sequelize } from '../models/index.js';
 

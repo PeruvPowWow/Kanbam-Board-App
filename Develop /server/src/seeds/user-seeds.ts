@@ -1,11 +1,22 @@
-import { Ticket } from '../models/ticket.js';
+import { User } from '../models/user.js'; // Import the User model
 
-export const seedTickets = async () => {
-  await Ticket.bulkCreate([
-    { name: 'Design landing page', status: 'In Progress', description: 'Create wireframes and mockups for the landing page.', assignedUserId: 1 },
-    { name: 'Set up project repository', status: 'Done', description: 'Create a new repository on GitHub and initialize it with a README file.', assignedUserId: 2 },
-    { name: 'Implement authentication', status: 'Todo', description: 'Set up user authentication using JWT tokens.', assignedUserId: 1 },
-    { name: 'Test the API', status: 'Todo', description: 'Test the API using Insomnia.', assignedUserId: 1 },
-    { name: 'Deploy to production', status: 'Todo', description: 'Deploy the application to Render.', assignedUserId: 2 },
-  ]);
+export const seedUsers = async () => {
+  await User.bulkCreate([
+    {
+      username: 'john_doe',
+      password: 'password123',
+    },
+    {
+      username: 'jane_smith',
+      password: 'password456',
+    },
+    {
+      username: 'admin_user',
+      password: 'adminpass789',
+    },
+  ], {
+    individualHooks: true, // Ensure password hashing hooks are run
+  });
+
+  console.log('Users seeded!');
 };
