@@ -1,12 +1,12 @@
 import express from 'express';
-import authenticateToken from '../../middleware/auth.js'; // Import the authentication middleware
+import { authenticateToken } from '../../middleware/auth'; // Use named import
 import {
   getAllUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
-} from '../../controllers/user-controller.js';
+} from '../../controllers/user-controller'; // Assuming these are TypeScript files and the extension is omitted
 
 const router = express.Router();
 
@@ -29,3 +29,4 @@ router.put('/:id', updateUser);
 router.delete('/:id', deleteUser);
 
 export default router; // Export router as default
+

@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateToken } from '../../middleware/auth.js'; // Import the authentication middleware
+import { authenticateToken } from '../../middleware/auth'; // Import the authentication middleware
 import {
   getAllTickets,
   getTicketById,
