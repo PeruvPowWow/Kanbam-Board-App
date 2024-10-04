@@ -1,28 +1,18 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.authenticateToken = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-// This should be securely stored in an environment variable
-const secretKey = process.env.JWT_SECRET;
-// Middleware to authenticate JWT Token
-const authenticateToken = (req, res, next) => {
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
+export const authenticateToken = (req, res, next) => {
+    // TODO: verify the token exists and add the user data to the request object
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
-    if (token == null) {
-        res.sendStatus(401); // Return without sending Response object directly
-        return;
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
+            if (err) {
+                return res.sendStatus(403);
+            }
+            return req.user = user;
+            next();
+        });
     }
-    jsonwebtoken_1.default.verify(token, secretKey, (err, decoded) => {
-        if (err) {
-            res.sendStatus(403); // Return without sending Response object directly
-            return;
-        }
-        const user = decoded; // Type assertion to CustomJwtPayload
-        req.user = user; // Attach the user information to req.user
-        next(); // Proceed to the next middleware or route handler
-    });
+    ;
 };
-exports.authenticateToken = authenticateToken;
